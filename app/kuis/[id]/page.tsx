@@ -4,16 +4,17 @@ import { Button } from "@/components/ui/button";
 import Image from 'next/image';
 
 interface KuisPageProps {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
-const Kuis = ({ params }: KuisPageProps) => {
+const Kuis = async (props: KuisPageProps) => {
+  const params = await props.params;
   const { id } = params;
 
   const image = {
     'matematika-dasar' : '/matematika-dasar.png',
     'fisika-dasar' : '/fisika-dasar.jpg',
-    'inggris-dasar' : '/inggris-dasar.png'
+    'bahasa-inggris-dasar' : '/inggris-dasar.png'
   };
 
   return (
@@ -26,6 +27,7 @@ const Kuis = ({ params }: KuisPageProps) => {
             alt={id}
             width={240}
             height={240}
+            priority
           />
           </div>
           <CardTitle className="capitalize text-2xl">{id.replace(/-/g, " ")}</CardTitle>
@@ -38,7 +40,7 @@ const Kuis = ({ params }: KuisPageProps) => {
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }
 
 export default Kuis
