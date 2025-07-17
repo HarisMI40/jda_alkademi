@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  // mengambil parameter, contoh "https://www.web.com/api/123"
   try {
     try {
       const id = (await params).id;

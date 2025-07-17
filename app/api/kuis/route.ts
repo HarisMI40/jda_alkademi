@@ -59,6 +59,7 @@ export async function DELETE(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    // mengambil query, contoh "https://www.web.com/api/kuis?id=123"
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
