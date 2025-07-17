@@ -3,7 +3,7 @@ import * as crypto from "node:crypto";
 
 
 const randomId = () => crypto.randomBytes(20).toString('hex');
-const kuis = [
+let kuis = [
   { id: randomId(), title: "Kuis Matematika Dasar", tag: "Matematika", questions: [] },
   { id: randomId(), title: "Kuis Fisika Dasar", tag: "Fisika", questions: [] },
   { id: randomId(), title: "Kuis Pemrograman Dasar", tag: "Pemrograman", questions: [] },
@@ -50,6 +50,7 @@ export async function DELETE(request: Request) {
     }
 
     const updateKuis = kuis.filter((kuis) => kuis.id !== id);
+    kuis = updateKuis;
 
     return NextResponse.json({ message: `Kuis dengan ID ${id} berhasil dihapus`, data : updateKuis });
   } catch (error: any) {
@@ -76,6 +77,8 @@ export async function PUT(request: Request) {
 
       return {...kuis}
     })
+
+    kuis = updateKuis;
 
     return NextResponse.json({ message: `Kuis dengan ID ${id} berhasil diUpdate`, data : updateKuis });
     
