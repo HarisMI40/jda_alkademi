@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { neon } from '@neondatabase/serverless';
 
-const kuis = [
-  { id: "1", title: "Kuis Matematika Dasar", tag: "Matematika", questions: [] },
-  { id: "2", title: "Kuis Fisika Dasar", tag: "Fisika", questions: [] },
-  { id: "3", title: "Kuis Pemrograman Dasar", tag: "Pemrograman", questions: [] },
-]
 
 export async function GET(request: NextRequest) {
   return NextResponse.json({ data: request });
@@ -13,19 +9,17 @@ export async function GET(request: NextRequest) {
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   // mengambil parameter, contoh "https://www.web.com/api/123"
   try {
-    try {
-      const id = (await params).id;
+    const id = (await params).id;
+    const sql = neon(`${process.env.DATABASE_URL}`);
+    const hapus = await sql`DELETE FROM kuis where id = ${id}`;
 
-      if (!id) {
-        return NextResponse.json({ message: 'ID Kuis wajib disertakan' }, { status: 400 });
-      }
-
-      const updateKuis = kuis.filter((kuis) => kuis.id !== id);
-
-      return NextResponse.json({ message: `Kuis dengan ID ${id} berhasil dihapus`, data: updateKuis });
-    } catch (error: any) {
-      return NextResponse.json({ message: 'Terjadi kesalahan pada server', error: error.message }, { status: 500 });
+    if(!hapus){
+      throw new Error();
     }
+
+    const data = await sql`select * from kuis`;
+
+    return NextResponse.json(data);
   } catch (error: any) {
 
   }
@@ -35,23 +29,14 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const id = (await params).id;
+    const {title, tag} = await request.json();
 
-    const { title, tag } = await request.json();
+    const sql = neon(`${process.env.DATABASE_URL}`);
 
-    const updateKuis = kuis.map(kuis => {
-      if (kuis.id == id) {
-        return {
-          ...kuis,
-          title,
-          tag
-        }
-      }
+    const update = await sql`UPDATE kuis SET title = ${title}, tag = ${tag} where id = ${id}`;
 
-      return { ...kuis }
-    })
-
-    return NextResponse.json({ message: `Kuis dengan ID ${id} berhasil diUpdate`, data: updateKuis });
-
+    const data = await sql`select * from kuis`;
+    return NextResponse.json(data);
 
   } catch (error: any) {
     return NextResponse.json({ message: 'Terjadi kesalahan pada server', error: error.message }, { status: 500 });

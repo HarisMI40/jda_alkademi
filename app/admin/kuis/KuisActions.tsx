@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Input } from '@/components/ui/input';
+import { LoaderCircle } from 'lucide-react';
 
 interface Kuis {
   id: string;
@@ -28,6 +29,7 @@ interface KuisActionsProps {
 
 export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [loading, setLoading] = useState({delete : false, update : false})
 
   const handleDelete = async () => {
     if (!confirm('Apakah Anda yakin ingin menghapus kuis dengan id ?' + kuisId)) {
@@ -35,21 +37,22 @@ export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps)
     }
 
     try {
-      const response = await fetch(`/api/kuis?id=${kuisId}`, {
+      setLoading({delete : true, update : false});
+      const response = await fetch(`/api/kuis/${kuisId}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
-        alert('Kuis berhasil dihapus');
         const data = await response.json();
-        console.log(data.data)
-        setKuis(data.data);
+        setKuis(data);
       } else {
         const { message } = await response.json();
         alert(`Gagal menghapus kuis: ${message || 'Terjadi kesalahan'}`);
       }
     } catch (error) {
       alert('Gagal menghubungi server.');
+    }finally{
+      setLoading({delete : false, update : false});
     }
   };
 
@@ -66,7 +69,8 @@ export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps)
     }
 
     try {
-      const response = await fetch(`/api/kuis?id=${kuisId}`, {
+      setLoading({delete : false, update : true});
+      const response:any = await fetch(`/api/kuis/${kuisId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -74,11 +78,12 @@ export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps)
         body: JSON.stringify({ title, tag }),
       });
 
-      if (response.ok) {
+      if (response) {
         const result = await response.json();
         // API mengembalikan seluruh array yang sudah diupdate
-        setKuis(result.data); 
+        setKuis(result); 
         alert('Kuis berhasil diupdate');
+
         setIsDialogOpen(false); // Tutup dialog setelah berhasil
       } else {
         const { message } = await response.json();
@@ -86,18 +91,21 @@ export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps)
       }
     } catch (error) {
       alert('Gagal menghubungi server.');
+    }finally{
+      setLoading({delete : false, update : false});
     }
   };
 
   return (
     <div className="flex gap-2">
       <Button variant="destructive" size="sm" onClick={handleDelete}>
-        HAPUS
+        {loading.delete ? <><LoaderCircle className='animate-spin' /> Menghapus ... </> : "HAPUS"}
       </Button>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
           <Button variant="success" size="sm">
+            
             Update
           </Button>
         </DialogTrigger>
@@ -121,7 +129,9 @@ export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps)
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit" variant={'success'}>Update</Button>
+              <Button type="submit" variant={'success'}>
+                {loading.update ? <><LoaderCircle className='animate-spin' /> Mengupdate ... </> : "Update"}
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
