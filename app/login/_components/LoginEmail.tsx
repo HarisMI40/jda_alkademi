@@ -46,6 +46,7 @@ const LoginEmail = () => {
 
       // Dapatkan callbackUrl atau gunakan default
       const callbackUrl = searchParams.get('callbackUrl');
+
       const redirectUrl = callbackUrl || '/dashboard';
       
       // Lakukan push
