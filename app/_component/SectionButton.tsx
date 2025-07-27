@@ -7,6 +7,10 @@ import React from 'react'
 const SectionButton = () => {
   const {status} = useSession()
 
+  if(!status) return;
+
+  if(status === "loading") return;
+
   if(status === "unauthenticated"){
     return (
       <>
@@ -16,7 +20,9 @@ const SectionButton = () => {
         </Button>
       </>
     )
-  }else{
+  }
+  
+  if(status === "authenticated"){
     return(
       <Button className='bg-tersier hover:bg-tersier/90'>
         <Link href="/dashboard">Pergi Ke Dashboard</Link>

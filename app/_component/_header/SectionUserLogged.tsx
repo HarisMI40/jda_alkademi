@@ -3,6 +3,7 @@ import { LogOut } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import Image from 'next/image'
 import React from 'react'
+import { BProgress } from '@bprogress/core';
 
 interface user {
   email?: string | null | undefined,
@@ -11,6 +12,16 @@ interface user {
 }
 
 const SectionUserLogged = ({ user }: { user: user }) => {
+
+  const HandleLogout = async () => {
+     // Mulai progress bar terlebih dahulu
+    BProgress.start();
+    
+    // Kemudian panggil signOut.
+    signOut(); 
+  }
+
+
   return (
     <>
       <Popover>
@@ -29,7 +40,7 @@ const SectionUserLogged = ({ user }: { user: user }) => {
           </div>
         </PopoverTrigger>
         <PopoverContent className='w-max hover:cursor-pointer hover:bg-slate-200 px-10' align="end">
-          <button className='text-red-500 hover:cursor-pointer flex gap-3' onClick={() => signOut()}><LogOut />  Logout</button>
+          <button className='text-red-500 hover:cursor-pointer flex gap-3' onClick={HandleLogout}><LogOut />  Logout</button>
         </PopoverContent>
       </Popover>
     </>
