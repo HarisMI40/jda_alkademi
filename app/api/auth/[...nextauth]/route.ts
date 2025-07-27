@@ -19,36 +19,45 @@ export const authOptions: AuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null
-        }
+        // Gunakan try...catch untuk menangani semua kemungkinan error (database, bcrypt, dll.)
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            return null
+          }
 
-        const sql = neon(process.env.DATABASE_URL!)
+          const sql = neon(process.env.DATABASE_URL!)
 
-        const userResult = await sql`SELECT * FROM users WHERE email = ${credentials.email}`
+          const userResult = await sql`SELECT * FROM users WHERE email = ${credentials.email}`
 
-        if (userResult.length === 0) {
-          console.log("No user found")
-          return null // Pengguna tidak ditemukan
-        }
+          if (userResult.length === 0) {
+            console.log("No user found with email:", credentials.email)
+            return null // Pengguna tidak ditemukan
+          }
 
-        const user = userResult[0]
+          const user = userResult[0]
 
-        const passwordsMatch = await bcrypt.compare(
-          credentials.password,
-          user.password as string
-        )
+          const passwordsMatch = await bcrypt.compare(
+            credentials.password,
+            user.password as string
+          )
 
-        if (!passwordsMatch) {
-          console.log("Password mismatch")
-          return null // Password tidak cocok
-        }
+          if (!passwordsMatch) {
+            console.log("Password mismatch for email:", credentials.email)
+            return null // Password tidak cocok
+          }
 
-        return {
-          id: user.id as string,
-          email: user.email as string,
-          name: user.fullname as string,
-          role: user.role as string
+          // Jika semua berhasil, kembalikan data pengguna
+          return {
+            id: user.id as string,
+            email: user.email as string,
+            name: user.fullname as string,
+            role: user.role as string
+          }
+        } catch (error) {
+          console.error("Authorize Error:", error);
+          // Jika terjadi error apapun selama proses, kembalikan null
+          // agar NextAuth tahu otentikasi gagal.
+          return null;
         }
       },
     }),
