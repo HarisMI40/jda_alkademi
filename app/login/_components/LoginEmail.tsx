@@ -14,7 +14,6 @@ const LoginEmail = () => {
 
   const router = useRouter()
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -38,6 +37,7 @@ const LoginEmail = () => {
         return;
       }
 
+      const callbackUrl = searchParams.get('callbackUrl');
       // Jika berhasil, arahkan ke halaman tujuan
       const redirectUrl = callbackUrl || '/dashboard';
       router.push(redirectUrl);
@@ -60,6 +60,7 @@ const LoginEmail = () => {
             <span className="block sm:inline">{error}</span>
           </div>
         )}
+
         <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>
           <Input
