@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import {
   Card,
   CardAction,
@@ -27,7 +27,9 @@ const Login = () => {
         </CardAction>
       </CardHeader>
       <CardContent>
-        <LoginEmail />
+        <Suspense fallback={<div>Loading ... </div>}>
+          <LoginEmail />
+        </Suspense>
       </CardContent>
       <CardFooter className="flex-col gap-2">
         <LoginGoogle />
