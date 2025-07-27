@@ -6,6 +6,7 @@ import React, { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { LoaderCircle } from 'lucide-react'
+import { BProgress } from '@bprogress/core';
 
 const LoginEmail = () => {
   const [form, setForm] = useState({ email: '', password: '' })
@@ -22,36 +23,41 @@ const LoginEmail = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
-    setError(null) // Hapus error sebelumnya
+    setError(null)
 
     try {
       const signInResponse = await signIn('credentials', {
         email: form.email,
         password: form.password,
-        redirect: false, // Penting: tangani redirect secara manual
+        redirect: false,
       })
 
       if (signInResponse?.error) {
-        // Jika ada error, tampilkan pesan yang sesuai
         setError('Email atau password salah. Silakan coba lagi.')
-        setLoading(false); // Pastikan loading berhenti jika error
+        setLoading(false);
         return;
       }
 
-      // 1. Refresh router untuk memastikan cookie sesi terbaru dikenali
+      // 2. Mulai NProgress secara manual
+      BProgress.start();
+
+      // Refresh router untuk sinkronisasi sesi
       router.refresh();
 
-      // 2. Dapatkan callbackUrl atau gunakan default
+      // Dapatkan callbackUrl atau gunakan default
       const callbackUrl = searchParams.get('callbackUrl');
       const redirectUrl = callbackUrl || '/dashboard';
       
-      // 3. Baru lakukan push
+      // Lakukan push
       router.push(redirectUrl);
 
     } catch (err) {
       console.error(err)
       setError("Terjadi kesalahan yang tidak terduga. Silakan coba lagi.")
+      BProgress.done(); // Pastikan nprogress berhenti jika ada error tak terduga
     } finally {
+      // Tidak perlu NProgress.done() di sini, karena event routeChangeComplete
+      // dari router.push() akan menanganinya secara otomatis.
       setLoading(false)
     }
   }
