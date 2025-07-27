@@ -60,9 +60,24 @@ const FormRegister = () => {
       router.push('/dashboard');
       router.refresh();
 
-    } catch (error:any) {
-      console.log(error.response.data);
-      setError(error.response.data.errors);
+    } catch (error) {
+      // 1. Gunakan type guard dari axios untuk memeriksa tipe error
+      if (axios.isAxiosError(error)) {
+        // 2. Pastikan ada respons dari server sebelum mengaksesnya
+        if (error.response) {
+          // Sekarang TypeScript tahu 'error.response' ada dan aman diakses
+          console.log(error.response.data);
+          // Set state error dengan objek 'errors' dari respons API
+          setError(error.response.data.errors);
+        } else {
+          // Tangani kasus di mana tidak ada respons (misalnya, masalah jaringan)
+          console.error("Error:", error.message);
+          // Anda bisa set pesan error umum di sini jika mau
+        }
+      } else {
+        // Tangani error yang bukan dari axios
+        console.error("An unexpected error occurred:", error);
+      }
     } finally {
       setLoading(false)
     }
@@ -70,17 +85,6 @@ const FormRegister = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      {/* {error > 0 && (
-        <div className="mb-4 rounded bg-red-100 border border-red-400 text-red-700 px-4 py-3">
-            <h1>ERROR</h1>
-          <ul className="list-disc pl-5">
-            {error.map((errMsg, idx) => (
-              <li key={idx}>{errMsg[0]}</li>
-            ))}
-          </ul>
-        </div>
-      )} */}
-
       <div className="flex flex-col gap-6">
 
         <div className="grid gap-2">

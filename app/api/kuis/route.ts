@@ -30,7 +30,8 @@ export async function POST(request: Request) {
     const data = await sql`INSERT INTO kuis (title, tag) VALUES (${title}, ${tag})`;
 
     return NextResponse.json({ data: data }, { status: 201 });
-  } catch (error: any) {
+  } catch (error) {
+    console.error(error)
     return NextResponse.json(
       { error: "Request body tidak valid atau bukan JSON." },
       { status: 400 }

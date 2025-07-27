@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import HeroImage from "./HeroImage";
 import SectionButton from "./SectionButton";
 

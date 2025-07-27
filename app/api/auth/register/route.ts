@@ -39,10 +39,21 @@ export async function POST(request: NextRequest) {
     `;
 
     return NextResponse.json({ message: "User registered" }, { status: 201 });
-  } catch (error: any) {
-    if (error.code === '23505') {
-      return NextResponse.json({ message: "User already exists" }, { status: 409 });
+  } catch (error) {
+    // Lakukan pengecekan tipe sebelum mengakses properti dari 'error'
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "23505"
+    ) {
+      // '23505' adalah kode error PostgreSQL untuk pelanggaran unique constraint
+      return NextResponse.json(
+        { message: "Email atau username sudah terdaftar." },
+        { status: 409 } // 409 Conflict
+      );
     }
+    
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }

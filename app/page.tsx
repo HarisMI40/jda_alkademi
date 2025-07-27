@@ -1,6 +1,5 @@
 import FeaturesSection from "./_component/FeaturesSection";
 import Footer from "./_component/Footer";
-import Header from "./_component/_header/Header";
 import HeroSection from "./_component/HeroSection";
 import KuisSection from "./_component/KuisSection";
 

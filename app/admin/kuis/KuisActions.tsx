@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import {
   Dialog,
@@ -23,13 +22,13 @@ interface Kuis {
 
 interface KuisActionsProps {
   kuisId: string;
-  kuis : Kuis;
+  kuis: Kuis;
   setKuis: React.Dispatch<React.SetStateAction<Kuis[]>>
 }
 
 export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [loading, setLoading] = useState({delete : false, update : false})
+  const [loading, setLoading] = useState({ delete: false, update: false })
 
   const handleDelete = async () => {
     if (!confirm('Apakah Anda yakin ingin menghapus kuis dengan id ?' + kuisId)) {
@@ -37,7 +36,7 @@ export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps)
     }
 
     try {
-      setLoading({delete : true, update : false});
+      setLoading({ delete: true, update: false });
       const response = await fetch(`/api/kuis/${kuisId}`, {
         method: 'DELETE',
       });
@@ -51,8 +50,9 @@ export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps)
       }
     } catch (error) {
       alert('Gagal menghubungi server.');
-    }finally{
-      setLoading({delete : false, update : false});
+      console.error(error)
+    } finally {
+      setLoading({ delete: false, update: false });
     }
   };
 
@@ -69,8 +69,8 @@ export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps)
     }
 
     try {
-      setLoading({delete : false, update : true});
-      const response:any = await fetch(`/api/kuis/${kuisId}`, {
+      setLoading({ delete: false, update: true });
+      const response = await fetch(`/api/kuis/${kuisId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -78,21 +78,24 @@ export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps)
         body: JSON.stringify({ title, tag }),
       });
 
-      if (response) {
-        const result = await response.json();
-        // API mengembalikan seluruh array yang sudah diupdate
-        setKuis(result); 
-        alert('Kuis berhasil diupdate');
-
-        setIsDialogOpen(false); // Tutup dialog setelah berhasil
-      } else {
+      if (!response.ok) {
         const { message } = await response.json();
         alert(`Gagal mengupdate kuis: ${message || 'Terjadi kesalahan'}`);
+        return
       }
+
+      const result = await response.json();
+      // API mengembalikan seluruh array yang sudah diupdate
+      setKuis(result);
+      alert('Kuis berhasil diupdate');
+
+      setIsDialogOpen(false); // Tutup dialog setelah berhasil
+
     } catch (error) {
       alert('Gagal menghubungi server.');
-    }finally{
-      setLoading({delete : false, update : false});
+      console.error(error)
+    } finally {
+      setLoading({ delete: false, update: false });
     }
   };
 
@@ -105,7 +108,7 @@ export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps)
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
           <Button variant="success" size="sm">
-            
+
             Update
           </Button>
         </DialogTrigger>
