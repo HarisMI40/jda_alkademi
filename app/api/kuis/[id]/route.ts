@@ -20,8 +20,8 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     const data = await sql`select * from kuis`;
 
     return NextResponse.json(data);
-  } catch (error: any) {
-
+  } catch (error) {
+    console.error(error)
   }
 }
 
@@ -33,12 +33,14 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
     const sql = neon(`${process.env.DATABASE_URL}`);
 
-    const update = await sql`UPDATE kuis SET title = ${title}, tag = ${tag} where id = ${id}`;
+    await sql`UPDATE kuis SET title = ${title}, tag = ${tag} where id = ${id}`;
 
     const data = await sql`select * from kuis`;
     return NextResponse.json(data);
 
-  } catch (error: any) {
-    return NextResponse.json({ message: 'Terjadi kesalahan pada server', error: error.message }, { status: 500 });
+  } catch (error) {
+    if(error && typeof error == "object" && "message" in error){
+      return NextResponse.json({ message: 'Terjadi kesalahan pada server', error: error.message }, { status: 500 });
+    }
   }
 }

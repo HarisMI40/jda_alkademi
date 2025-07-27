@@ -1,6 +1,5 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import HeroImage from "./HeroImage";
+import SectionButton from "./SectionButton";
 
 export default function HeroSection() {
   return (
@@ -17,10 +16,7 @@ export default function HeroSection() {
               </p>
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
-              <Button size="lg">Mulai Gratis</Button>
-              <Button variant="outline" size="lg">
-                <Link href={"/login"}>Masuk sebagai Guru</Link>
-              </Button>
+              <SectionButton />
             </div>
           </div>
           <div className="flex items-center justify-center">

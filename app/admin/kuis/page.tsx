@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import KuisActions from './KuisActions';
-import { Loader, LoaderCircle, Plus } from 'lucide-react';
+import { LoaderCircle, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 

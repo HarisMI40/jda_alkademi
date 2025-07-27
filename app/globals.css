@@ -127,3 +127,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .judul {
+    @apply text-2xl uppercase font-bold mb-4 text-gray-800;
+  }
+} 
