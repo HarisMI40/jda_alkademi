@@ -1,10 +1,11 @@
-import NextAuth from "next-auth"
+import NextAuth, { AuthOptions, Session, User } from "next-auth"
+import { JWT } from "next-auth/jwt"
 import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { neon } from "@neondatabase/serverless"
 import bcrypt from "bcrypt"
 
-export const authOptions = {
+export const authOptions: AuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
@@ -47,6 +48,7 @@ export const authOptions = {
           id: user.id as string,
           email: user.email as string,
           name: user.fullname as string,
+          role: user.role as string
         }
       },
     }),
@@ -57,6 +59,24 @@ export const authOptions = {
     
     // Atur masa berlaku sesi di sini (dalam detik)
     maxAge: 30 * 24 * 60 * 60,
+  },
+
+
+  callbacks: {
+    async jwt({ token, user }: { token: JWT; user?: User }) {
+      // Saat sign-in, 'user' object akan ada
+      if (user) {
+        token.role = user.role
+      }
+      return token
+    },
+    async session({ session, token }: { session: Session; token: JWT }) {
+      // Tambahkan properti 'role' dari token ke session
+      if (session.user) {
+        session.user.role = token.role as string
+      }
+      return session
+    },
   },
 }
 
