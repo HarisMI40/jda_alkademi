@@ -34,14 +34,19 @@ const LoginEmail = () => {
       if (signInResponse?.error) {
         // Jika ada error, tampilkan pesan yang sesuai
         setError('Email atau password salah. Silakan coba lagi.')
+        setLoading(false); // Pastikan loading berhenti jika error
         return;
       }
 
+      // 1. Refresh router untuk memastikan cookie sesi terbaru dikenali
+      router.refresh();
+
+      // 2. Dapatkan callbackUrl atau gunakan default
       const callbackUrl = searchParams.get('callbackUrl');
-      // Jika berhasil, arahkan ke halaman tujuan
       const redirectUrl = callbackUrl || '/dashboard';
+      
+      // 3. Baru lakukan push
       router.push(redirectUrl);
-      router.refresh(); // Opsional: untuk memastikan sesi server terupdate
 
     } catch (err) {
       console.error(err)
