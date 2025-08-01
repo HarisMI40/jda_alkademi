@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,6 +11,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Plus, Trash2, GripVertical, Eye, Save } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { useParams } from "next/navigation"
+import axios from "axios"
 
 interface QuizOption {
   id: string
@@ -34,12 +36,28 @@ interface Quiz {
 
 export default function QuizBuilder() {
   const [quiz, setQuiz] = useState<Quiz>({
-    title: "Untitled Quiz",
+    title: "",
     description: "",
     questions: [],
   })
 
   const [previewMode, setPreviewMode] = useState(false)
+
+  const {id} = useParams();
+
+
+  useEffect(() => {
+    async function fetchData(){
+      const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/kuis/${id}`);
+      
+      console.log(data)
+      setQuiz({...quiz, title : data.title, description : data.description});
+    }
+
+    fetchData();
+  
+  }, [])
+  
 
   const addQuestion = () => {
     const newQuestion: QuizQuestion = {
