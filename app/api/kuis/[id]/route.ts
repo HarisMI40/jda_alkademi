@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { neon } from '@neondatabase/serverless';
 
 
-export async function GET(request: NextRequest) {
-  return NextResponse.json({ data: request });
+export async function GET(request: NextRequest, {params} : {params : Promise<{id: string}>}) {
+  const {id} = await params;
+  const sql = neon(`${process.env.DATABASE_URL}`)
+  const data = await sql`select * from kuis where id = ${id}`;
+
+  return NextResponse.json(data[0]);
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {

@@ -40,7 +40,7 @@ const AdminKuis = () => {
 
   }, []);
   return (
-    <div className='container mx-auto px-2 lg:px-0'>
+    <div className='container mx-auto px-15'>
       <h1 className="text-2xl font-bold mb-4">Manajemen Kuis</h1>
       <Button variant={'default'} className='my-4'> <Plus /><Link href="./kuis/create"> Tambah Kuis </Link></Button>
       <div className="relative overflow-x-auto shadow-md sm:rounded">
