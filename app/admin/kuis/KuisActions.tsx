@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Input } from '@/components/ui/input';
-import { LoaderCircle } from 'lucide-react';
+import { Info, LoaderCircle, Pencil, Trash } from 'lucide-react';
+import Link from 'next/link';
 
 interface Kuis {
   id: string;
@@ -101,15 +102,20 @@ export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps)
 
   return (
     <div className="flex gap-2">
+      
+      <Button variant="default" size="sm" >
+        <Link href={`./kuis/${kuisId}`}> <Info /> </Link>
+      </Button>
+
+
       <Button variant="destructive" size="sm" onClick={handleDelete}>
-        {loading.delete ? <><LoaderCircle className='animate-spin' /> Menghapus ... </> : "HAPUS"}
+        {loading.delete ? <><LoaderCircle className='animate-spin' /> Menghapus ... </> : <Trash />}
       </Button>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
           <Button variant="success" size="sm">
-
-            Update
+            <Pencil />
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">

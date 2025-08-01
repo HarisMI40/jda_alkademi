@@ -40,7 +40,7 @@ const AdminKuis = () => {
 
   }, []);
   return (
-    <>
+    <div className='container mx-auto px-2 lg:px-0'>
       <h1 className="text-2xl font-bold mb-4">Manajemen Kuis</h1>
       <Button variant={'default'} className='my-4'> <Plus /><Link href="./kuis/create"> Tambah Kuis </Link></Button>
       <div className="relative overflow-x-auto shadow-md sm:rounded">
@@ -62,7 +62,7 @@ const AdminKuis = () => {
             </tr>
           </thead>
           <tbody>
-            {loading && <tr><td colSpan={4} className='p-4'>
+            {loading && <tr className='bg-white'><td colSpan={4} className='p-4'>
               <div className='flex justify-center gap-2'><LoaderCircle className='animate-spin' /> Loading ...</div></td></tr>}
             {
               kuis && (
@@ -87,7 +87,7 @@ const AdminKuis = () => {
           </tbody>
         </table>
       </div>
-    </>
+    </div>
   )
 }
 
