@@ -23,6 +23,7 @@ import QuizHeader from "./_components/QuizHeader"
 import Header from "./_components/Header"
 import AddQuestionButton from "./_components/AddQuestionButton"
 import axios from "axios"
+import { toast } from "sonner"
 
 export default function QuizBuilderPage() {
   const [previewMode, setPreviewMode] = useState(false)
@@ -44,6 +45,8 @@ const handleSaveQuiz = async () => {
     setLoading(true);
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/kuis/${id}`, quiz)
       .finally(() => setLoading(false));
+
+      toast.success('Kuis berhasil tersimpan')
   }
 
   return (
