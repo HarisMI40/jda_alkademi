@@ -22,7 +22,7 @@ export default function QuestionPreview({ question, index }: QuestionPreviewProp
           </h3>
         </div>
 
-        {question.type === "multiple-choice" && (
+        {question.type === "multiple_choice" && (
           <RadioGroup>
             {question.options.map((option:any) => (
               <div key={option.id} className="flex items-center space-x-2">
@@ -44,8 +44,8 @@ export default function QuestionPreview({ question, index }: QuestionPreviewProp
           </div>
         )}
 
-        {question.type === "short-answer" && <Input placeholder="Your answer" />}
-        {question.type === "long-answer" && <Textarea placeholder="Your answer" rows={4} />}
+        {question.type === "short_answer" && <Input placeholder="Your answer" />}
+        {question.type === "long_answer" && <Textarea placeholder="Your answer" rows={4} />}
       </CardContent>
     </Card>
   )
