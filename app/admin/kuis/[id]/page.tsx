@@ -22,6 +22,7 @@ import QuestionPreview from "./_components/QuestionPreview" // Asumsi komponen i
 import QuizHeader from "./_components/QuizHeader"
 import Header from "./_components/Header"
 import AddQuestionButton from "./_components/AddQuestionButton"
+import axios from "axios"
 
 export default function QuizBuilderPage() {
   const [previewMode, setPreviewMode] = useState(false)
@@ -40,6 +41,8 @@ export default function QuizBuilderPage() {
   // Untuk saat ini, kita akan terus passing props.
 const handleSaveQuiz = async () => {
     console.log("Saving quiz:", quiz);
+
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/kuis/${id}`, quiz);
   }
 
   return (
