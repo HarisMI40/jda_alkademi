@@ -29,6 +29,7 @@ export default function QuizBuilderPage() {
   const { id } = useParams()
   const dispatch = useDispatch<AppDispatch>()
   const quiz = useSelector((state: RootState) => state.quiz)
+  const [isLoading, setLoading] = useState(false)
 
   useEffect(() => {
     if (typeof id === "string") {
@@ -40,9 +41,9 @@ export default function QuizBuilderPage() {
   // atau panggil dispatch langsung dari dalam komponen tersebut.
   // Untuk saat ini, kita akan terus passing props.
 const handleSaveQuiz = async () => {
-    console.log("Saving quiz:", quiz);
-
-    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/kuis/${id}`, quiz);
+    setLoading(true);
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/kuis/${id}`, quiz)
+      .finally(() => setLoading(false));
   }
 
   return (
@@ -53,6 +54,7 @@ const handleSaveQuiz = async () => {
         previewMode={previewMode}
         onTogglePreview={() => setPreviewMode(!previewMode)}
         onSave={handleSaveQuiz}
+        isLoadingSave={isLoading}
       />
 
       <div className="max-w-4xl mx-auto px-4 py-8">

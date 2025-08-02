@@ -2,16 +2,17 @@
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Eye, Save } from "lucide-react"
+import { Eye, LoaderCircle, Save } from "lucide-react"
 
 interface HeaderProps {
   questionCount: number
   previewMode: boolean
   onTogglePreview: () => void
-  onSave: () => void
+  onSave: () => void,
+  isLoadingSave: boolean
 }
 
-export default function Header({ questionCount, previewMode, onTogglePreview, onSave }: HeaderProps) {
+export default function Header({ questionCount, previewMode, onTogglePreview, onSave, isLoadingSave }: HeaderProps) {
   return (
     <div className="bg-white border-b sticky top-0 z-10">
       <div className="max-w-4xl mx-auto px-4 py-4">
@@ -25,9 +26,21 @@ export default function Header({ questionCount, previewMode, onTogglePreview, on
               <Eye className="h-4 w-4" />
               {previewMode ? "Edit" : "Preview"}
             </Button>
-            <Button onClick={onSave} className="flex items-center gap-2">
-              <Save className="h-4 w-4" />
-              Save Quiz
+            <Button onClick={onSave} className="flex items-center gap-2" disabled={isLoadingSave}>
+              {
+                isLoadingSave ? (
+                  <>
+                    <span className="animate-spin"> 
+                      <LoaderCircle />
+                    </span>
+                    Saving
+                  </>
+                ) : 
+                <>
+                  <Save className="h-4 w-4" />
+                  Save Quiz
+                </>
+              }
             </Button>
           </div>
         </div>
