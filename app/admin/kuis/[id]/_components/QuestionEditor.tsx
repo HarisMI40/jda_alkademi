@@ -1,4 +1,4 @@
-import { QuizQuestion } from "@/type/formQuestion"
+import { QuizOption, QuizQuestion } from "@/type/formQuestion"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,7 +15,7 @@ interface QuestionEditorProps {
   updateQuestion: (id: string, updates: Partial<QuizQuestion>) => void
   deleteQuestion: (id: string) => void
   addOption: (questionId: string) => void
-  updateOption: (questionId: string, optionId: string, updates: Partial<any>) => void
+  updateOption: (questionId: string, optionId: string, updates: Partial<QuizOption>) => void
   deleteOption: (questionId: string, optionId: string) => void
   setCorrectAnswer: (questionId: string, optionId: string) => void
 }

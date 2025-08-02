@@ -1,4 +1,4 @@
-import { QuizQuestion } from "@/type/formQuestion"
+import { QuizOption, QuizQuestion } from "@/type/formQuestion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -24,7 +24,7 @@ export default function QuestionPreview({ question, index }: QuestionPreviewProp
 
         {question.type === "multiple_choice" && (
           <RadioGroup>
-            {question.options.map((option:any) => (
+            {question.options.map((option:QuizOption) => (
               <div key={option.id} className="flex items-center space-x-2">
                 <RadioGroupItem value={option.id} id={`${question.id}-${option.id}`} />
                 <Label htmlFor={`${question.id}-${option.id}`}>{option.text}</Label>
@@ -35,7 +35,7 @@ export default function QuestionPreview({ question, index }: QuestionPreviewProp
 
         {question.type === "checkbox" && (
           <div className="space-y-2">
-            {question.options.map((option:any) => (
+            {question.options.map((option:QuizOption) => (
               <div key={option.id} className="flex items-center space-x-2">
                 <Checkbox id={`${question.id}-${option.id}`} />
                 <Label htmlFor={`${question.id}-${option.id}`}>{option.text}</Label>

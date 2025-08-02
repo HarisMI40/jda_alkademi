@@ -22,7 +22,6 @@ import QuestionPreview from "./_components/QuestionPreview" // Asumsi komponen i
 import QuizHeader from "./_components/QuizHeader"
 import Header from "./_components/Header"
 import AddQuestionButton from "./_components/AddQuestionButton"
-import axios from "axios"
 
 export default function QuizBuilderPage() {
   const [previewMode, setPreviewMode] = useState(false)
