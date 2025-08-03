@@ -24,6 +24,7 @@ import Header from "./_components/Header"
 import AddQuestionButton from "./_components/AddQuestionButton"
 import axios from "axios"
 import { toast } from "sonner"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function QuizBuilderPage() {
   const [previewMode, setPreviewMode] = useState(false)
@@ -64,27 +65,38 @@ const handleSaveQuiz = async () => {
         {/* Quiz Header */}
         <QuizHeader previewMode={previewMode} quiz={quiz} />
 
-        {/* Questions */}
-        {quiz.questions.map((question, index) =>
-          previewMode ? (
-            <QuestionPreview key={question.id} question={question} index={index} />
-          ) : (
-            <QuestionEditor
-              key={question.id}
-              question={question}
-              index={index}
-              updateQuestion={(id, updates) => dispatch(updateQuestion({ id, updates }))}
-              deleteQuestion={(id) => dispatch(deleteQuestion(id))}
-              addOption={(questionId) => dispatch(addOption(questionId))}
-              updateOption={(questionId, optionId, updates) => dispatch(updateOption({ questionId, optionId, updates }))}
-              deleteOption={(questionId, optionId) => dispatch(deleteOption({ questionId, optionId }))}
-              setCorrectAnswer={(questionId, optionId) => dispatch(setCorrectAnswer({ questionId, optionId }))}
-            />
-          ),
-        )}
+        {
+        quiz.status === "loading" 
+          ?
+          (
+            <div className="flex flex-col gap-10">
+              <Skeleton className="h-[300px] w-full rounded-xl" />
+            </div>
+          )
+          :
+          (
+            quiz.questions.map((question, index) =>
+            previewMode ? (
+              <QuestionPreview key={question.id} question={question} index={index} />
+            ) : (
+              <QuestionEditor
+                key={question.id}
+                question={question}
+                index={index}
+                updateQuestion={(id, updates) => dispatch(updateQuestion({ id, updates }))}
+                deleteQuestion={(id) => dispatch(deleteQuestion(id))}
+                addOption={(questionId) => dispatch(addOption(questionId))}
+                updateOption={(questionId, optionId, updates) => dispatch(updateOption({ questionId, optionId, updates }))}
+                deleteOption={(questionId, optionId) => dispatch(deleteOption({ questionId, optionId }))}
+                setCorrectAnswer={(questionId, optionId) => dispatch(setCorrectAnswer({ questionId, optionId }))}
+              />
+            ),)
+          )
+        }
+    
 
         {/* Add Question Button */}
-        {!previewMode && <AddQuestionButton />}
+        {(!previewMode && quiz.status == "succeeded") && <AddQuestionButton />}
 
         {/* Preview Submit Button */}
         {previewMode && quiz.questions.length > 0 && (

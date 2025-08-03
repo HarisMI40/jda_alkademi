@@ -1,15 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { neon } from '@neondatabase/serverless';
 import prisma from "@/lib/db";
-import { QuizOption } from "@/type/formQuestion";
-import { tipe_pertanyaan } from "@prisma/client"; // Impor tipe ENUM dari Prisma
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const sql = neon(`${process.env.DATABASE_URL}`)
-  const data = await sql`select * from quiz where id = ${id}`;
 
-  return NextResponse.json(data[0]);
+  const data = await prisma.quiz.findFirst({
+  include: {
+    questions:{
+      include: {
+          answer_options: true, // Sertakan semua answer_options untuk setiap pertanyaan
+        },
+    }
+  },
+  where:{
+    id : parseInt(id)
+  }
+})
+
+
+  return NextResponse.json(data);
 }
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
