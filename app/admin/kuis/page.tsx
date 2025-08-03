@@ -23,7 +23,9 @@ interface Kuis {
 const AdminKuis = () => {
   const [kuis, setKuis] = useState<Kuis[]>([]);
   const [loading, setLoading] = useState(false);
+
   const [tags, setTags] = useState<tag[]>([]);
+
   const router = useRouter();
   let no = 1;
 
@@ -34,7 +36,6 @@ const AdminKuis = () => {
       try {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/kuis`);
         const data = await response.data;
-        console.log(data)
         setKuis(data);
       } catch (error) {
         console.error(error);
@@ -67,7 +68,6 @@ const AdminKuis = () => {
 
     fetchTags();
   }, []);
-
 
 
   const pushHandler = (id : string) => {

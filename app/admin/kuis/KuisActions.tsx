@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from '@/components/ui/input';
 import { EllipsisVertical, LoaderCircle, Pencil, Trash, Info } from 'lucide-react';
 
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -73,6 +74,7 @@ export default function KuisActions({ kuisId, kuis, tags, setKuis, pushHandler }
 
       if (response.ok) {
         toast.success('Kuis berhasil Di Hapus')
+
         const data: Kuis[] = await response.json();
         setKuis(data);
       } else {
@@ -133,11 +135,13 @@ export default function KuisActions({ kuisId, kuis, tags, setKuis, pushHandler }
 
   return (
     <div className="flex gap-2">
+
       <DropdownMenu>
         <DropdownMenuTrigger onClick={(e) => e.stopPropagation()}><div className='hover:bg-gray-300 hover:cursor-pointer py-2 px-1 rounded-full'><EllipsisVertical /></div></DropdownMenuTrigger>
         <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
           <DropdownMenuLabel>Opsi</DropdownMenuLabel>
           <DropdownMenuSeparator />
+
           
           <DropdownMenuItem onClick={(e) => {
             e.stopPropagation();
@@ -162,7 +166,7 @@ export default function KuisActions({ kuisId, kuis, tags, setKuis, pushHandler }
           <DialogHeader>
             <DialogTitle>Update Kuis</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleUpdate}>
+          <form onSubmit={handleUpdate} onClick={(e) => e.stopPropagation()}>
             <div className="flex flex-col gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="title" className="text-right">

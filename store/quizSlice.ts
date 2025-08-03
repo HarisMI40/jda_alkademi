@@ -34,6 +34,7 @@ const quizSlice = createSlice({
         answer_options: [
           { id: parseInt(Date.now().toString() + "1"), question_id:  parseInt(idQuestion), options_text: "Option 1", is_right: false },
           { id: parseInt(Date.now().toString()+ "2") , question_id: parseInt(idQuestion),options_text: "Option 2", is_right: false },
+
         ],
         required: false,
       }
@@ -54,6 +55,7 @@ const quizSlice = createSlice({
         const newOption: QuizOption = {
           id: parseInt(Date.now().toString()),
           question_id: parseInt(question.id),
+
           options_text: `Option ${question.answer_options.length + 1}`,
           is_right: false,
         }
@@ -64,11 +66,13 @@ const quizSlice = createSlice({
       const question = state.questions.find((q) => q.id === action.payload.questionId)
       if (question && question.answer_options.length > 2) {
         question.answer_options = question.answer_options.filter((opt) => opt.id.toString()  !==  action.payload.optionId)
+
       }
     },
     updateOption(state, action: PayloadAction<{ questionId: string; optionId: string; updates: Partial<QuizOption> }>) {
       const question = state.questions.find((q) => q.id === action.payload.questionId)
       const option = question?.answer_options.find((opt) => opt.id.toString() === action.payload.optionId)
+
       if (option) {
         Object.assign(option, action.payload.updates)
       }
@@ -83,6 +87,7 @@ const quizSlice = createSlice({
         })
       } else if (question.question_type === "checkbox") {
         const option = question.answer_options.find((opt) => opt.id.toString() === action.payload.optionId)
+
         if (option) {
           option.is_right = !option.is_right
         }

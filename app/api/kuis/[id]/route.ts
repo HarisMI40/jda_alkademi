@@ -45,6 +45,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
       answer_options = [...answer_options, ...answer_option];
 
+
       return {
         id: parseInt(question.id),
         quiz_id: parseInt(id),
@@ -78,6 +79,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       })
     ]);
 
+
     return NextResponse.json({ success: true, message: "Quiz saved successfully" });
   } catch (error) {
     console.error("Failed to save quiz:", error);
@@ -101,7 +103,6 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
         id:  parseInt(id),
       },
     })
-
 
     if (!hapus) {
       throw new Error();
@@ -140,7 +141,6 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         tag: true
       }
     });
-
 
     return NextResponse.json(data);
 
