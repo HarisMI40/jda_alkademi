@@ -1,36 +1,32 @@
 import { NextResponse } from "next/server";
+
+import { neon } from '@neondatabase/serverless';
 import prisma from "@/lib/db";
 
 
 export async function GET() {
-  const data = await prisma.quiz.findMany({
-    include : {
-      tag : true
-    }
-  });
+  const data = await prisma.tag.findMany();
 
   return NextResponse.json(data);
 }
 
 
-
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { title, tag_id, description } = body;
+    const { name } = body;
 
-    if (!title || !tag_id) {
+    if (!name) {
       return NextResponse.json(
-        { error: "Properti 'title' dan 'tag wajib diisi." },
+        { error: "Properti 'name' diisi." },
         { status: 400 }
       );
     }
 
-      const data = await prisma.quiz.create({
+
+    const data = await prisma.tag.create({
       data: {
-        title: title,
-        tag_id : tag_id,
-        description : description
+        name: name,
       },
     })
 

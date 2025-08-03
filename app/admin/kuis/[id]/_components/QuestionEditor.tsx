@@ -74,7 +74,7 @@ export default function QuestionEditor({
                 <Button
                   variant={option.is_right ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setCorrectAnswer(question.id, option.id)}
+                  onClick={() => setCorrectAnswer(question.id, option.id.toString())}
                   className="min-w-[80px]"
                 >
                   {option.is_right ? "Correct" : "Mark"}
@@ -82,14 +82,14 @@ export default function QuestionEditor({
                 <Input
                   placeholder={`Option ${optionIndex + 1}`}
                   value={option.options_text}
-                  onChange={(e) => updateOption(question.id, option.id, { options_text: e.target.value })}
+                  onChange={(e) => updateOption(question.id, option.id.toString(), { options_text: e.target.value })}
                   className="flex-1"
                 />
                 {question.answer_options.length > 2 && (
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => deleteOption(question.id, option.id)}
+                    onClick={() => deleteOption(question.id, option.id.toString())}
                     className="text-red-500 hover:text-red-700"
                   >
                     <Trash2 className="h-4 w-4" />

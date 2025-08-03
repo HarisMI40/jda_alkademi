@@ -26,13 +26,15 @@ const quizSlice = createSlice({
       if (action.payload.description !== undefined) state.description = action.payload.description
     },
     addQuestion(state) {
+      let idQuestion = Date.now().toString()
       const newQuestion: QuizQuestion = {
-        id: Date.now().toString(),
+        id: idQuestion,
         question_type: "multiple_choice",
         question_text: "",
         answer_options: [
-          { id: Date.now().toString() + "1", options_text: "Option 1", is_right: false },
-          { id: Date.now().toString() + "2", options_text: "Option 2", is_right: false },
+          { id: parseInt(Date.now().toString() + "1"), question_id:  parseInt(idQuestion), options_text: "Option 1", is_right: false },
+          { id: parseInt(Date.now().toString()+ "2") , question_id: parseInt(idQuestion),options_text: "Option 2", is_right: false },
+
         ],
         required: false,
       }
@@ -51,7 +53,9 @@ const quizSlice = createSlice({
       const question = state.questions.find((q) => q.id === action.payload)
       if (question) {
         const newOption: QuizOption = {
-          id: Date.now().toString(),
+          id: parseInt(Date.now().toString()),
+          question_id: parseInt(question.id),
+
           options_text: `Option ${question.answer_options.length + 1}`,
           is_right: false,
         }
@@ -61,12 +65,14 @@ const quizSlice = createSlice({
     deleteOption(state, action: PayloadAction<{ questionId: string; optionId: string }>) {
       const question = state.questions.find((q) => q.id === action.payload.questionId)
       if (question && question.answer_options.length > 2) {
-        question.answer_options = question.answer_options.filter((opt) => opt.id !== action.payload.optionId)
+        question.answer_options = question.answer_options.filter((opt) => opt.id.toString()  !==  action.payload.optionId)
+
       }
     },
     updateOption(state, action: PayloadAction<{ questionId: string; optionId: string; updates: Partial<QuizOption> }>) {
       const question = state.questions.find((q) => q.id === action.payload.questionId)
-      const option = question?.answer_options.find((opt) => opt.id === action.payload.optionId)
+      const option = question?.answer_options.find((opt) => opt.id.toString() === action.payload.optionId)
+
       if (option) {
         Object.assign(option, action.payload.updates)
       }
@@ -77,10 +83,11 @@ const quizSlice = createSlice({
 
       if (question.question_type === "multiple_choice") {
         question.answer_options.forEach((opt) => {
-          opt.is_right = opt.id === action.payload.optionId
+          opt.is_right = opt.id.toString() === action.payload.optionId
         })
       } else if (question.question_type === "checkbox") {
-        const option = question.answer_options.find((opt) => opt.id === action.payload.optionId)
+        const option = question.answer_options.find((opt) => opt.id.toString() === action.payload.optionId)
+
         if (option) {
           option.is_right = !option.is_right
         }
