@@ -21,7 +21,7 @@ export default function Header() {
         <BookOpenCheckIcon className="h-6 w-6" />
         <span className="sr-only">EduQuiz</span>
       </Link>
-      <nav className="ml-auto flex gap-4 sm:gap-6">
+      <nav className="ml-auto flex gap-4 sm:gap-6 w-2/12 justify-end">
         {
           status === "unauthenticated" 
           ? 
@@ -29,7 +29,7 @@ export default function Header() {
           :
           (
             session?.user && (
-              <SectionUserLogged user={session.user} />
+              <SectionUserLogged user={session.user} role={session.user.role} />
             )
           )
         

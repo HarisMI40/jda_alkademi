@@ -4,14 +4,16 @@ import { signOut } from 'next-auth/react'
 import Image from 'next/image'
 import React from 'react'
 import { BProgress } from '@bprogress/core';
+import Link from 'next/link'
+import LinkAdmin from './LinkAdmin'
 
 interface user {
   email?: string | null | undefined,
   image?: string | null | undefined,
-  name?: string | null | undefined
+  name?: string | null | undefined,
 }
 
-const SectionUserLogged = ({ user }: { user: user }) => {
+const SectionUserLogged = ({ user, role }: { user: user, role : string | undefined }) => {
 
   const HandleLogout = async () => {
      // Mulai progress bar terlebih dahulu
@@ -23,7 +25,11 @@ const SectionUserLogged = ({ user }: { user: user }) => {
 
 
   return (
-    <>
+    <div className='flex items-center w-full justify-between gap-10'>
+
+      
+      <LinkAdmin role={role} />
+
       <Popover>
         <PopoverTrigger>
           <div className='flex gap-2 items-center hover:cursor-pointer hover:bg-slate-200/70 py-2 px-4 rounded'>
@@ -43,7 +49,7 @@ const SectionUserLogged = ({ user }: { user: user }) => {
           <button className='text-red-500 hover:cursor-pointer flex gap-3' onClick={HandleLogout}><LogOut />  Logout</button>
         </PopoverContent>
       </Popover>
-    </>
+    </div>
   )
 }
 
