@@ -17,35 +17,35 @@ export default function QuestionPreview({ question, index }: QuestionPreviewProp
       <CardContent className="pt-6">
         <div className="mb-4">
           <h3 className="text-lg font-medium mb-2">
-            {index + 1}. {question.question || "Untitled Question"}
+            {index + 1}. {question.question_text || "Untitled Question"}
             {question.required && <span className="text-red-500 ml-1">*</span>}
           </h3>
         </div>
 
-        {question.type === "multiple_choice" && (
+        {question.question_type === "multiple_choice" && (
           <RadioGroup>
-            {question.options.map((option:QuizOption) => (
+            {question.answer_options.map((option:QuizOption) => (
               <div key={option.id} className="flex items-center space-x-2">
-                <RadioGroupItem value={option.id} id={`${question.id}-${option.id}`} />
-                <Label htmlFor={`${question.id}-${option.id}`}>{option.text}</Label>
+                <RadioGroupItem value={option.id.toString()} id={`${question.id}-${option.id}`} />
+                <Label htmlFor={`${question.id}-${option.id}`}>{option.options_text}</Label>
               </div>
             ))}
           </RadioGroup>
         )}
 
-        {question.type === "checkbox" && (
+        {question.question_type === "checkbox" && (
           <div className="space-y-2">
-            {question.options.map((option:QuizOption) => (
+            {question.answer_options.map((option:QuizOption) => (
               <div key={option.id} className="flex items-center space-x-2">
                 <Checkbox id={`${question.id}-${option.id}`} />
-                <Label htmlFor={`${question.id}-${option.id}`}>{option.text}</Label>
+                <Label htmlFor={`${question.id}-${option.id}`}>{option.options_text}</Label>
               </div>
             ))}
           </div>
         )}
 
-        {question.type === "short_answer" && <Input placeholder="Your answer" />}
-        {question.type === "long_answer" && <Textarea placeholder="Your answer" rows={4} />}
+        {question.question_type === "short_answer" && <Input placeholder="Your answer" />}
+        {question.question_type === "long_answer" && <Textarea placeholder="Your answer" rows={4} />}
       </CardContent>
     </Card>
   )

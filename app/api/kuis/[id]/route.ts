@@ -1,50 +1,52 @@
-import { NextRequest, NextResponse } from "next/server";
-import { neon } from '@neondatabase/serverless';
+import { NextResponse } from "next/server";
+import { type NextRequest } from 'next/server'
 import prisma from "@/lib/db";
 import { QuizOption, QuizQuestion } from "@/type/formQuestion";
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+// Perbaikan pada GET
+export async function GET(request: NextRequest,
+  { params }: { params: Promise<{ id: string }>}
+  ) {
+  const { id } = await params; 
 
   const data = await prisma.quiz.findFirst({
     include: {
       questions: {
         include: {
-          answer_options: true, // Sertakan semua answer_options untuk setiap pertanyaan
+          answer_options: true,
         },
       }
     },
     where: {
       id: parseInt(id)
     }
-  })
-
+  });
 
   return NextResponse.json(data);
 }
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+// Perbaikan pada POST
+export async function POST(request: NextRequest,
+  { params }: { params: Promise<{ id: string }>}
+  ) {
   try {
-    const { id } = await params;
+    const { id } = await params; 
     const quizId = parseInt(id);
     const body = await request.json();
     const { title, description, questions } = body;
 
     let answer_options: QuizOption[] = [];
 
-    const dataQuestions = questions.map((question: QuizQuestion, index: any) => {
-
+    const dataQuestions = questions.map((question: QuizQuestion, index: number) => {
       const answer_option: QuizOption[] = question.answer_options.map((option: QuizOption, optionIndex: number) => ({
         id: option.id,
         question_id: parseInt(question.id),
         options_text: option.options_text,
         is_right: option.is_right,
         order: optionIndex + 1,
-      }))
-
+      }));
 
       answer_options = [...answer_options, ...answer_option];
-
 
       return {
         id: parseInt(question.id),
@@ -53,10 +55,9 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
         question_type: question.question_type,
         order_number: index + 1,
         required: question.required,
-      }
+      };
     });
     await prisma.$transaction([
-
       prisma.quiz.update({
         where: { id: quizId },
         data: {
@@ -65,26 +66,21 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
           updated_at: new Date(),
         },
       }),
-
       prisma.questions.deleteMany({
         where: { quiz_id: quizId },
       }),
-
       prisma.questions.createMany({
         data: dataQuestions
       }),
-
       prisma.answer_options.createMany({
         data: answer_options.map(ao => ({ ...ao, order: ao.order || 0 }))
       })
     ]);
 
-
     return NextResponse.json({ success: true, message: "Quiz saved successfully" });
   } catch (error) {
     console.error("Failed to save quiz:", error);
     const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
-
     const errorCode = error instanceof Object && 'code' in error ? error.code : undefined;
     return NextResponse.json(
       { error: "Failed to save quiz", details: errorMessage, code: errorCode },
@@ -93,20 +89,18 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  // mengambil parameter, contoh "https://www.web.com/api/123"
+// Perbaikan pada DELETE
+export async function DELETE(request: NextRequest,
+  { params }: { params: Promise<{ id: string }>}
+) {
   try {
-    const id = (await params).id;
+    const { id } = await params; // DIUBAH: Hapus await dan ubah cara akses
 
-    const hapus = await prisma.quiz.delete({
+    await prisma.quiz.delete({
       where: {
-        id:  parseInt(id),
+        id: parseInt(id),
       },
     })
-
-    if (!hapus) {
-      throw new Error();
-    }
 
     const data = await prisma.quiz.findMany({
       include: {
@@ -116,15 +110,18 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error(error)
+    console.error(error);
+    return NextResponse.json({ error: "Failed to delete quiz" }, { status: 500 });
   }
 }
 
-
-export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+// Perbaikan pada PUT
+export async function PUT(request: NextRequest,
+  { params }: { params: Promise<{ id: string }>}
+  ) {
   try {
-    const id = (await params).id;
-    const { title, tag } = await request.json();
+    const { id } = await params; // DIUBAH: Hapus await dan ubah cara akses
+    const { title, tag_id } = await request.json(); // Menggunakan tag_id agar lebih jelas
 
     await prisma.quiz.update({
       where: {
@@ -132,7 +129,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       },
       data: {
         title: title,
-        tag_id: tag
+        tag_id: tag_id ? parseInt(tag_id) : null, // Pastikan tag_id adalah angka atau null
       },
     })
 

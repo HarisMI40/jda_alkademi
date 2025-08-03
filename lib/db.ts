@@ -12,7 +12,7 @@ neonConfig.webSocketConstructor = ws;
 // Type definitions
 // ==================================================================
 // Ini memberitahu JSON.stringify cara mengubah BigInt menjadi string.
-;(BigInt.prototype as any).toJSON = function () {
+BigInt.prototype.toJSON = function () {
   return this.toString()
 }
 // ==================================================================
