@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { neon } from '@neondatabase/serverless';
 import prisma from "@/lib/db";
+import { QuizOption, QuizQuestion } from "@/type/formQuestion";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -29,15 +30,15 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     const body = await request.json();
     const { title, description, questions } = body;
 
-    let answer_options:any = [];
+    let answer_options:QuizOption[] = [];
 
-    const dataQuestions = questions.map((question: any, index: any) => {
+    const dataQuestions = questions.map((question: QuizQuestion, index: any) => {
       
-      const answer_option = question.options.map((option: any, optionIndex: number) => ({
-        id: parseInt(option.id),
+      const answer_option: QuizOption[] = question.answer_options.map((option: QuizOption, optionIndex: number) => ({
+        id: option.id,
         question_id: parseInt(question.id),
-        options_text: option.text,
-        is_right: option.isCorrect,
+        options_text: option.options_text,
+        is_right: option.is_right,
         order: optionIndex + 1,
       }))
 
@@ -47,14 +48,12 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       return {
         id: parseInt(question.id),
         quiz_id: parseInt(id),
-        question_text: question.question,
-        question_type: question.type,
+        question_text: question.question_text,
+        question_type: question.question_type,
         order_number: index + 1,
         required: question.required,
       }
     });
-
-
     await prisma.$transaction([
 
       prisma.quiz.update({
@@ -75,7 +74,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       }),
 
       prisma.answer_options.createMany({
-        data : answer_options
+        data : answer_options.map(ao => ({...ao, order: ao.order || 0}))
       })
   ]);
 

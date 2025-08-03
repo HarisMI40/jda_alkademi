@@ -7,13 +7,20 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Input } from '@/components/ui/input';
-import { Info, LoaderCircle, Pencil, Trash } from 'lucide-react';
-import Link from 'next/link';
+import { EllipsisVertical, LoaderCircle, Pencil, Trash } from 'lucide-react';
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface Kuis {
   id: string;
@@ -31,7 +38,10 @@ export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps)
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loading, setLoading] = useState({ delete: false, update: false })
 
-  const handleDelete = async () => {
+  const handleDelete = async (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+
+
     if (!confirm('Apakah Anda yakin ingin menghapus kuis dengan id ?' + kuisId)) {
       return;
     }
@@ -43,10 +53,10 @@ export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps)
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const data: Kuis[] = await response.json();
         setKuis(data);
       } else {
-        const { message } = await response.json();
+        const { message }: { message?: string } = await response.json();
         alert(`Gagal menghapus kuis: ${message || 'Terjadi kesalahan'}`);
       }
     } catch (error) {
@@ -102,27 +112,27 @@ export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps)
 
   return (
     <div className="flex gap-2">
-      
-      <Button variant="default" size="sm" >
-        <Link href={`./kuis/${kuisId}`}> <Info /> </Link>
-      </Button>
 
+      <DropdownMenu>
+        <DropdownMenuTrigger onClick={(e) => e.stopPropagation()}><div className='hover:bg-gray-300 hover:cursor-pointer py-2 px-1 rounded-full'><EllipsisVertical /></div></DropdownMenuTrigger>
+        <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
+          <DropdownMenuLabel>Opsi</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={(e) => {
+            e.stopPropagation();
+            setIsDialogOpen(true)
+            }}><div className='text-green-500 flex gap-2 items-center font-semibold'><Pencil color="green" /> Update</div></DropdownMenuItem>
+          <DropdownMenuItem onClick={handleDelete}>{loading.delete ? <><LoaderCircle className='animate-spin' /> Menghapus ... </> : <div className='text-red-500 flex gap-2 items-center font-semibold'><Trash color="red" /> Hapus</div>}</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-      <Button variant="destructive" size="sm" onClick={handleDelete}>
-        {loading.delete ? <><LoaderCircle className='animate-spin' /> Menghapus ... </> : <Trash />}
-      </Button>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger asChild>
-          <Button variant="success" size="sm">
-            <Pencil />
-          </Button>
-        </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Update Kuis</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleUpdate}>
+          <form onSubmit={handleUpdate} onClick={(e) => e.stopPropagation()}>
             <div className="flex flex-col gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="title" className="text-right">
