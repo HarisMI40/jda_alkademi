@@ -40,7 +40,7 @@ export default function Page() {
   }
 
   return (
-    <>
+    <div className='container mx-auto w-8/12 bg-white p-5 rounded-lg'>
       <h1 className="text-2xl font-bold mb-4">Tambah Kuis</h1>
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col gap-4 py-4">
@@ -62,6 +62,6 @@ export default function Page() {
           {loading ? <><LoaderCircle className='animate-spin' /> Loading ... </> : "Tambah"}
         </Button>
       </form>
-    </>
+    </div>
   );
 }
