@@ -3,8 +3,10 @@ import prisma from "@/lib/db";
 import { QuizOption, QuizQuestion } from "@/type/formQuestion";
 
 // Perbaikan pada GET
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params; // DIUBAH: Hapus await
+export async function GET(request: NextRequest,
+  { params }: { params: Promise<{ id: string }>}
+  ) {
+  const { id } = await params; 
 
   const data = await prisma.quiz.findFirst({
     include: {
@@ -23,9 +25,11 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // Perbaikan pada POST
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest,
+  { params }: { params: Promise<{ id: string }>}
+  ) {
   try {
-    const { id } = params; // DIUBAH: Hapus await
+    const { id } = await params; 
     const quizId = parseInt(id);
     const body = await request.json();
     const { title, description, questions } = body;
@@ -85,9 +89,11 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 }
 
 // Perbaikan pada DELETE
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest,
+  { params }: { params: Promise<{ id: string }>}
+) {
   try {
-    const { id } = params; // DIUBAH: Hapus await dan ubah cara akses
+    const { id } = await params; // DIUBAH: Hapus await dan ubah cara akses
 
     await prisma.quiz.delete({
       where: {
@@ -109,9 +115,11 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 }
 
 // Perbaikan pada PUT
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest,
+  { params }: { params: Promise<{ id: string }>}
+  ) {
   try {
-    const { id } = params; // DIUBAH: Hapus await dan ubah cara akses
+    const { id } = await params; // DIUBAH: Hapus await dan ubah cara akses
     const { title, tag_id } = await request.json(); // Menggunakan tag_id agar lebih jelas
 
     await prisma.quiz.update({
