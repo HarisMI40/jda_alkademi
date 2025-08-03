@@ -12,8 +12,17 @@ export default function Header() {
 
   const path = usePathname();
 
+  
+
+  const pageNotHeader = ['/login', '/register'];
+
+
+
   // jika ada di halaman login atau register, maka navbar tidak akan di tampilkan
-  if(path === "/login" || path === "/register") return;
+  if(pageNotHeader.includes(path)) return null;
+
+   // Cek path dinamis untuk halaman kuis
+  if (path.startsWith('/kuis') && path.endsWith('/play')) return null;
 
   return (
     <header className="px-4 lg:px-6 h-14 flex items-center">
