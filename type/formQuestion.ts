@@ -19,6 +19,7 @@ export interface Quiz {
   id : number
   title: string
   description: string
+  tag_id : number
   questions: QuizQuestion[]
 }
 
