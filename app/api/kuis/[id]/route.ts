@@ -22,7 +22,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   return NextResponse.json(data);
 }
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params } : { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const quizId = parseInt(id);
