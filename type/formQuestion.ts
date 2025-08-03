@@ -1,5 +1,6 @@
 export interface QuizOption {
-  id: string
+  id: number
+  question_id: number
   options_text: string
   is_right: boolean,
   order?: number
