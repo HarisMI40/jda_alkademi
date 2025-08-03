@@ -1,5 +1,5 @@
 export interface QuizOption {
-  id: number
+  id: number | string
   question_id: number
 
   options_text: string
