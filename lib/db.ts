@@ -10,6 +10,14 @@ neonConfig.webSocketConstructor = ws;
 // neonConfig.poolQueryViaFetch = true
 
 // Type definitions
+// ==================================================================
+// Ini memberitahu JSON.stringify cara mengubah BigInt menjadi string.
+;(BigInt.prototype as any).toJSON = function () {
+  return this.toString()
+}
+// ==================================================================
+
+
 declare global {
   var prisma: PrismaClient | undefined
 }
