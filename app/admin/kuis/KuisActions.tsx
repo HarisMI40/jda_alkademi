@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Input } from '@/components/ui/input';
-import { EllipsisVertical, LoaderCircle, Pencil, Trash } from 'lucide-react';
+import { EllipsisVertical, LoaderCircle, Pencil, Trash, Info } from 'lucide-react';
 
 import {
   DropdownMenu,
@@ -22,21 +22,40 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { toast } from 'sonner';
+
+interface tag {
+  id: number,
+  name: string
+}
+
+
 interface Kuis {
   id: string;
   title: string;
-  tag: string;
+  tag: tag;
 }
 
 interface KuisActionsProps {
   kuisId: string;
   kuis: Kuis;
-  setKuis: React.Dispatch<React.SetStateAction<Kuis[]>>
+  tags: tag[];
+  setKuis: React.Dispatch<React.SetStateAction<Kuis[]>>;
+  pushHandler: (id: string) => void;
 }
 
-export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps) {
+export default function KuisActions({ kuisId, kuis, tags, setKuis, pushHandler }: KuisActionsProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [loading, setLoading] = useState({ delete: false, update: false })
+  const [loading, setLoading] = useState({ delete: false, update: false });
 
   const handleDelete = async (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
@@ -72,12 +91,13 @@ export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps)
 
     const formData = new FormData(e.currentTarget);
     const title = formData.get('title') as string;
-    const tag = formData.get('tag') as string;
+    const tag = formData.get('tag_id') as string;
 
     if (!title || !tag) {
       alert('Judul dan Tag tidak boleh kosong.');
       return;
     }
+
 
     try {
       setLoading({ delete: false, update: true });
@@ -98,7 +118,7 @@ export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps)
       const result = await response.json();
       // API mengembalikan seluruh array yang sudah diupdate
       setKuis(result);
-      alert('Kuis berhasil diupdate');
+      toast.success('Kuis berhasil Di Update')
 
       setIsDialogOpen(false); // Tutup dialog setelah berhasil
 
@@ -112,27 +132,36 @@ export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps)
 
   return (
     <div className="flex gap-2">
-
       <DropdownMenu>
         <DropdownMenuTrigger onClick={(e) => e.stopPropagation()}><div className='hover:bg-gray-300 hover:cursor-pointer py-2 px-1 rounded-full'><EllipsisVertical /></div></DropdownMenuTrigger>
         <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
           <DropdownMenuLabel>Opsi</DropdownMenuLabel>
           <DropdownMenuSeparator />
+          
+          <DropdownMenuItem onClick={(e) => {
+            e.stopPropagation();
+            pushHandler(kuisId);
+          }}>
+            <div className='text-blue-500 flex gap-2 items-center font-semibold'><Info color="blue" /> Detail</div>
+          </DropdownMenuItem>
+
           <DropdownMenuItem onClick={(e) => {
             e.stopPropagation();
             setIsDialogOpen(true)
-            }}><div className='text-green-500 flex gap-2 items-center font-semibold'><Pencil color="green" /> Update</div></DropdownMenuItem>
+          }}><div className='text-green-500 flex gap-2 items-center font-semibold'><Pencil color="green" /> Update Cepat</div></DropdownMenuItem>
+          
           <DropdownMenuItem onClick={handleDelete}>{loading.delete ? <><LoaderCircle className='animate-spin' /> Menghapus ... </> : <div className='text-red-500 flex gap-2 items-center font-semibold'><Trash color="red" /> Hapus</div>}</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent 
+          className="sm:max-w-md"
+        >
           <DialogHeader>
             <DialogTitle>Update Kuis</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleUpdate} onClick={(e) => e.stopPropagation()}>
+          <form onSubmit={handleUpdate}>
             <div className="flex flex-col gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="title" className="text-right">
@@ -144,10 +173,27 @@ export default function KuisActions({ kuisId, kuis, setKuis }: KuisActionsProps)
                 <Label htmlFor="tag" className="text-right">
                   Tag
                 </Label>
-                <Input id="tag" name="tag" defaultValue={kuis.tag} className="col-span-3" />
+                <Select name="tag_id" defaultValue={kuis.tag?.id.toString()}>
+                  <SelectTrigger className="w-full col-span-3">
+                    <SelectValue placeholder="Pilih tag..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Daftar Tag</SelectLabel>
+                      {tags.map((tag) => (
+                        <SelectItem key={tag.id} value={tag.id.toString()}>
+                          {tag.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <DialogFooter>
+              <Button type="button" variant="secondary" onClick={() => setIsDialogOpen(false)}>
+                Batal
+              </Button>
               <Button type="submit" variant={'success'}>
                 {loading.update ? <><LoaderCircle className='animate-spin' /> Mengupdate ... </> : "Update"}
               </Button>

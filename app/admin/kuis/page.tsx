@@ -9,16 +9,21 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { BProgress } from '@bprogress/core';
 
+interface tag {
+  id : number,
+  name : string
+}
 interface Kuis {
   id: string;
   title: string;
-  tag: string;
+  tag: tag;
 }
 
 
 const AdminKuis = () => {
   const [kuis, setKuis] = useState<Kuis[]>([]);
   const [loading, setLoading] = useState(false);
+  const [tags, setTags] = useState<tag[]>([]);
   const router = useRouter();
   let no = 1;
 
@@ -29,6 +34,7 @@ const AdminKuis = () => {
       try {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/kuis`);
         const data = await response.data;
+        console.log(data)
         setKuis(data);
       } catch (error) {
         console.error(error);
@@ -39,9 +45,29 @@ const AdminKuis = () => {
 
 
     fetchData();
-
-
+    
+    
   }, []);
+  
+  
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await fetch('/api/tag');
+        if (!response.ok) {
+          throw new Error('Gagal mengambil data tag');
+        }
+        const data = await response.json();
+        setTags(data);
+      } catch (error) {
+        console.error("Gagal mengambil tags:", error);
+        alert('Gagal memuat data tag.');
+      }
+    };
+
+    fetchTags();
+  }, []);
+
 
 
   const pushHandler = (id : string) => {
@@ -60,15 +86,18 @@ const AdminKuis = () => {
             {
               kuis && (
                 kuis.map((kuis) => (
-                  <tr key={kuis.id} className="border-b dark:border-gray-700 border-gray-300 hover:bg-blue-100 active:bg-blue-100/50 text-black hover:cursor-pointer" onClick={() => pushHandler(kuis.id)}>
+                  <tr key={kuis.id} className="border-b dark:border-gray-700 border-gray-300 hover:bg-gray-50 text-black">
                     <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                       {no++}
                     </th>
                     <td className="px-6 py-4">
                       {kuis.title}
                     </td>
+                    <td className="px-6 py-4">
+                      {kuis?.tag?.name}
+                    </td>
                     <td className="px-6 py-4 flex justify-end">
-                      <KuisActions kuis={kuis} setKuis={setKuis} kuisId={kuis.id} />
+                      <KuisActions kuis={kuis} setKuis={setKuis} kuisId={kuis.id} tags={tags} pushHandler={pushHandler} />
                     </td>
                   </tr>
                 ))

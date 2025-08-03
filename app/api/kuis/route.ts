@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
 
 import { neon } from '@neondatabase/serverless';
+import prisma from "@/lib/db";
 
 
 export async function GET() {
-   const sql = neon(`${process.env.DATABASE_URL}`);
-   const data = await sql`select * from kuis`;
+  const data = await prisma.quiz.findMany({
+    include : {
+      tag : true
+    }
+  });
 
-  
-   return NextResponse.json(data);
+  return NextResponse.json(data);
 }
 
 
@@ -27,7 +30,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const data = await sql`INSERT INTO kuis (title, tag) VALUES (${title}, ${tag})`;
+    const data = await sql`INSERT INTO quiz (title, tag) VALUES (${title}, ${tag})`;
 
     return NextResponse.json({ data: data }, { status: 201 });
   } catch (error) {

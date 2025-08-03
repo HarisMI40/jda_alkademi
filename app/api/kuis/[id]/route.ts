@@ -118,9 +118,15 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
     const sql = neon(`${process.env.DATABASE_URL}`);
 
-    await sql`UPDATE quiz SET title = ${title}, tag = ${tag} where id = ${id}`;
+    await sql`UPDATE quiz SET title = ${title}, tag_id = ${tag} where id = ${id}`;
 
-    const data = await sql`select * from quiz`;
+    const data = await prisma.quiz.findMany({
+    include : {
+      tag : true
+    }
+  });
+
+  
     return NextResponse.json(data);
 
   } catch (error) {
