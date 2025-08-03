@@ -3,6 +3,8 @@ import { Quiz, QuizQuestion, QuizOption, QuizState } from "@/type/formQuestion" 
 import axios from "axios"
 
 const initialState: QuizState = {
+  id : 0,
+  tag_id: 0,
   title: "",
   description: "",
   questions: [],
@@ -101,6 +103,8 @@ const quizSlice = createSlice({
       })
       .addCase(fetchQuizById.fulfilled, (state, action) => {
         state.status = "succeeded"
+        state.id = action.payload.id
+        state.tag_id = action.payload.tag_id
         state.title = action.payload.title
         state.description = action.payload.description
         state.questions = action.payload.questions
