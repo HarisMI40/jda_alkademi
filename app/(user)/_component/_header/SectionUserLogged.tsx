@@ -4,7 +4,6 @@ import { signOut } from 'next-auth/react'
 import Image from 'next/image'
 import React from 'react'
 import { BProgress } from '@bprogress/core';
-import Link from 'next/link'
 import LinkAdmin from './LinkAdmin'
 
 interface user {
@@ -27,7 +26,7 @@ const SectionUserLogged = ({ user, role }: { user: user, role : string | undefin
   return (
     <div className='flex items-center w-full justify-between gap-10'>
 
-      
+
       <LinkAdmin role={role} />
 
       <Popover>
