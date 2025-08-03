@@ -3,6 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
 import { setQuizDetails } from "@/store/quizSlice"
 import type { RootState, AppDispatch } from "@/store/store"
@@ -28,17 +29,29 @@ export default function QuizHeader({ previewMode, quiz }: QuizHeaderProps) {
           <div className="space-y-4">
             <div>
               <Label htmlFor="title">Quiz Title</Label>
-              <Input
-                id="title"
-                placeholder="Enter quiz title"
-                value={quiz.title}
-                onChange={(e) => dispatch(setQuizDetails({ title: e.target.value }))}
-                className="text-2xl font-bold border-0 px-0 focus-visible:ring-0"
-              />
+              {
+              quiz.status == "loading"
+                ?
+                  <Skeleton className="h-[20px] w-[200px] rounded mt-2" />
+                :
+                  <Input
+                    id="title"
+                    placeholder="Enter quiz title"
+                    value={quiz.title}
+                    onChange={(e) => dispatch(setQuizDetails({ title: e.target.value }))}
+                    className="text-2xl font-bold border-0 px-0 focus-visible:ring-0"
+                  />
+              }
             </div>
             <div>
               <Label htmlFor="description">Description (Optional)</Label>
-              <Textarea
+
+              {
+              quiz.status == "loading"
+                ?
+                  <Skeleton className="h-[40px] w-[200px] rounded mt-2" />
+                :
+                  <Textarea
                 id="description"
                 placeholder="Enter quiz description"
                 value={quiz.description || ""}
@@ -46,6 +59,7 @@ export default function QuizHeader({ previewMode, quiz }: QuizHeaderProps) {
                 className="border-0 px-0 focus-visible:ring-0"
                 rows={3}
               />
+              }
             </div>
           </div>
         )}

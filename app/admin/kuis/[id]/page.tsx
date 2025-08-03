@@ -22,12 +22,16 @@ import QuestionPreview from "./_components/QuestionPreview" // Asumsi komponen i
 import QuizHeader from "./_components/QuizHeader"
 import Header from "./_components/Header"
 import AddQuestionButton from "./_components/AddQuestionButton"
+import axios from "axios"
+import { toast } from "sonner"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function QuizBuilderPage() {
   const [previewMode, setPreviewMode] = useState(false)
   const { id } = useParams()
   const dispatch = useDispatch<AppDispatch>()
   const quiz = useSelector((state: RootState) => state.quiz)
+  const [isLoading, setLoading] = useState(false)
 
   useEffect(() => {
     if (typeof id === "string") {
@@ -39,7 +43,11 @@ export default function QuizBuilderPage() {
   // atau panggil dispatch langsung dari dalam komponen tersebut.
   // Untuk saat ini, kita akan terus passing props.
 const handleSaveQuiz = async () => {
-    console.log("Saving quiz:", quiz);
+    setLoading(true);
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/kuis/${id}`, quiz)
+      .finally(() => setLoading(false));
+
+      toast.success('Kuis berhasil tersimpan')
   }
 
   return (
@@ -50,33 +58,45 @@ const handleSaveQuiz = async () => {
         previewMode={previewMode}
         onTogglePreview={() => setPreviewMode(!previewMode)}
         onSave={handleSaveQuiz}
+        isLoadingSave={isLoading}
       />
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Quiz Header */}
         <QuizHeader previewMode={previewMode} quiz={quiz} />
 
-        {/* Questions */}
-        {quiz.questions.map((question, index) =>
-          previewMode ? (
-            <QuestionPreview key={question.id} question={question} index={index} />
-          ) : (
-            <QuestionEditor
-              key={question.id}
-              question={question}
-              index={index}
-              updateQuestion={(id, updates) => dispatch(updateQuestion({ id, updates }))}
-              deleteQuestion={(id) => dispatch(deleteQuestion(id))}
-              addOption={(questionId) => dispatch(addOption(questionId))}
-              updateOption={(questionId, optionId, updates) => dispatch(updateOption({ questionId, optionId, updates }))}
-              deleteOption={(questionId, optionId) => dispatch(deleteOption({ questionId, optionId }))}
-              setCorrectAnswer={(questionId, optionId) => dispatch(setCorrectAnswer({ questionId, optionId }))}
-            />
-          ),
-        )}
+        {
+        quiz.status === "loading" 
+          ?
+          (
+            <div className="flex flex-col gap-10">
+              <Skeleton className="h-[300px] w-full rounded-xl" />
+            </div>
+          )
+          :
+          (
+            quiz.questions.map((question, index) =>
+            previewMode ? (
+              <QuestionPreview key={question.id} question={question} index={index} />
+            ) : (
+              <QuestionEditor
+                key={question.id}
+                question={question}
+                index={index}
+                updateQuestion={(id, updates) => dispatch(updateQuestion({ id, updates }))}
+                deleteQuestion={(id) => dispatch(deleteQuestion(id))}
+                addOption={(questionId) => dispatch(addOption(questionId))}
+                updateOption={(questionId, optionId, updates) => dispatch(updateOption({ questionId, optionId, updates }))}
+                deleteOption={(questionId, optionId) => dispatch(deleteOption({ questionId, optionId }))}
+                setCorrectAnswer={(questionId, optionId) => dispatch(setCorrectAnswer({ questionId, optionId }))}
+              />
+            ),)
+          )
+        }
+    
 
         {/* Add Question Button */}
-        {!previewMode && <AddQuestionButton />}
+        {(!previewMode && quiz.status == "succeeded") && <AddQuestionButton />}
 
         {/* Preview Submit Button */}
         {previewMode && quiz.questions.length > 0 && (

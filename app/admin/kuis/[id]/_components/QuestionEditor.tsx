@@ -37,8 +37,8 @@ export default function QuestionEditor({
           <GripVertical className="h-5 w-5 text-gray-400 cursor-move" />
           <Badge variant="outline">{index + 1}</Badge>
           <Select
-            value={question.type}
-            onValueChange={(value: QuizQuestion["type"]) => updateQuestion(question.id, { type: value })}
+            value={question.question_type}
+            onValueChange={(value: QuizQuestion["question_type"]) => updateQuestion(question.id, { question_type: value })}
           >
             <SelectTrigger className="w-48">
               <SelectValue />
@@ -61,31 +61,31 @@ export default function QuestionEditor({
         </div>
         <Input
           placeholder="Enter your question"
-          value={question.question}
-          onChange={(e) => updateQuestion(question.id, { question: e.target.value })}
+          value={question.question_text}
+          onChange={(e) => updateQuestion(question.id, { question_text: e.target.value })}
           className="text-lg font-medium"
         />
       </CardHeader>
       <CardContent>
-        {(question.type === "multiple_choice" || question.type === "checkbox") && (
+        {(question.question_type === "multiple_choice" || question.question_type === "checkbox") && (
           <div className="space-y-3">
-            {question.options.map((option, optionIndex) => (
+            {question.answer_options.map((option, optionIndex) => (
               <div key={option.id} className="flex items-center gap-3">
                 <Button
-                  variant={option.isCorrect ? "default" : "outline"}
+                  variant={option.is_right ? "default" : "outline"}
                   size="sm"
                   onClick={() => setCorrectAnswer(question.id, option.id)}
                   className="min-w-[80px]"
                 >
-                  {option.isCorrect ? "Correct" : "Mark"}
+                  {option.is_right ? "Correct" : "Mark"}
                 </Button>
                 <Input
                   placeholder={`Option ${optionIndex + 1}`}
-                  value={option.text}
-                  onChange={(e) => updateOption(question.id, option.id, { text: e.target.value })}
+                  value={option.options_text}
+                  onChange={(e) => updateOption(question.id, option.id, { options_text: e.target.value })}
                   className="flex-1"
                 />
-                {question.options.length > 2 && (
+                {question.answer_options.length > 2 && (
                   <Button
                     variant="ghost"
                     size="icon"
@@ -104,9 +104,9 @@ export default function QuestionEditor({
           </div>
         )}
 
-        {question.type === "short_answer" && <Input placeholder="Short answer text" disabled className="bg-gray-50" />}
+        {question.question_type === "short_answer" && <Input placeholder="Short answer text" disabled className="bg-gray-50" />}
 
-        {question.type === "long_answer" && (
+        {question.question_type === "long_answer" && (
           <Textarea placeholder="Long answer text" disabled className="bg-gray-50" rows={4} />
         )}
 

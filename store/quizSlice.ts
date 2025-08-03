@@ -1,12 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
-import { Quiz, QuizQuestion, QuizOption } from "@/type/formQuestion" // Sesuaikan path jika perlu
+import { Quiz, QuizQuestion, QuizOption, QuizState } from "@/type/formQuestion" // Sesuaikan path jika perlu
 import axios from "axios"
-
-// Definisikan tipe untuk state slice
-interface QuizState extends Quiz {
-  status: "idle" | "loading" | "succeeded" | "failed"
-  error: string | null
-}
 
 const initialState: QuizState = {
   title: "",
@@ -34,11 +28,11 @@ const quizSlice = createSlice({
     addQuestion(state) {
       const newQuestion: QuizQuestion = {
         id: Date.now().toString(),
-        type: "multiple_choice",
-        question: "",
-        options: [
-          { id: Date.now().toString() + "1", text: "Option 1", isCorrect: false },
-          { id: Date.now().toString() + "2", text: "Option 2", isCorrect: false },
+        question_type: "multiple_choice",
+        question_text: "",
+        answer_options: [
+          { id: Date.now().toString() + "1", options_text: "Option 1", is_right: false },
+          { id: Date.now().toString() + "2", options_text: "Option 2", is_right: false },
         ],
         required: false,
       }
@@ -58,21 +52,21 @@ const quizSlice = createSlice({
       if (question) {
         const newOption: QuizOption = {
           id: Date.now().toString(),
-          text: `Option ${question.options.length + 1}`,
-          isCorrect: false,
+          options_text: `Option ${question.answer_options.length + 1}`,
+          is_right: false,
         }
-        question.options.push(newOption)
+        question.answer_options.push(newOption)
       }
     },
     deleteOption(state, action: PayloadAction<{ questionId: string; optionId: string }>) {
       const question = state.questions.find((q) => q.id === action.payload.questionId)
-      if (question && question.options.length > 2) {
-        question.options = question.options.filter((opt) => opt.id !== action.payload.optionId)
+      if (question && question.answer_options.length > 2) {
+        question.answer_options = question.answer_options.filter((opt) => opt.id !== action.payload.optionId)
       }
     },
     updateOption(state, action: PayloadAction<{ questionId: string; optionId: string; updates: Partial<QuizOption> }>) {
       const question = state.questions.find((q) => q.id === action.payload.questionId)
-      const option = question?.options.find((opt) => opt.id === action.payload.optionId)
+      const option = question?.answer_options.find((opt) => opt.id === action.payload.optionId)
       if (option) {
         Object.assign(option, action.payload.updates)
       }
@@ -81,14 +75,14 @@ const quizSlice = createSlice({
       const question = state.questions.find((q) => q.id === action.payload.questionId)
       if (!question) return
 
-      if (question.type === "multiple_choice") {
-        question.options.forEach((opt) => {
-          opt.isCorrect = opt.id === action.payload.optionId
+      if (question.question_type === "multiple_choice") {
+        question.answer_options.forEach((opt) => {
+          opt.is_right = opt.id === action.payload.optionId
         })
-      } else if (question.type === "checkbox") {
-        const option = question.options.find((opt) => opt.id === action.payload.optionId)
+      } else if (question.question_type === "checkbox") {
+        const option = question.answer_options.find((opt) => opt.id === action.payload.optionId)
         if (option) {
-          option.isCorrect = !option.isCorrect
+          option.is_right = !option.is_right
         }
       }
     },
@@ -102,6 +96,7 @@ const quizSlice = createSlice({
         state.status = "succeeded"
         state.title = action.payload.title
         state.description = action.payload.description
+        state.questions = action.payload.questions
         // Anda bisa tambahkan state.questions jika API mengembalikannya
       })
       .addCase(fetchQuizById.rejected, (state, action) => {
