@@ -72,6 +72,7 @@ export default function KuisActions({ kuisId, kuis, tags, setKuis, pushHandler }
       });
 
       if (response.ok) {
+        toast.success('Kuis berhasil Di Hapus')
         const data: Kuis[] = await response.json();
         setKuis(data);
       } else {
