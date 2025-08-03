@@ -21,25 +21,8 @@ interface QuizResult {
 
 
 
-
-// 2. Buat fungsi untuk memproses data dan memberikan ID unik
-const processQuizData = (quizData: any): Quiz => {
-  return {
-    ...quizData,
-    questions: quizData.questions.map((question: any) => ({
-      ...question,
-      answer_options: question.answer_options.map((option: any) => ({
-        ...option,
-        id: crypto.randomUUID(), // Menghasilkan ID unik untuk setiap opsi
-        options_text : option.text,
-        is_right: option.isCorrect
-      })),
-    })),
-  }
-}
-
 export default function QuizPlay() {
-  const [sampleQuiz, setSampleQuiz] = useState<any>();
+  const [sampleQuiz, setSampleQuiz] = useState<Quiz>();
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([])
@@ -56,7 +39,7 @@ export default function QuizPlay() {
   useEffect(() => {
     const fetchData = async () => {
       const response = await axios.get(`/api/kuis/${id}`);
-      console.log(response)
+
       setSampleQuiz(response.data)
     }
   
@@ -101,14 +84,14 @@ export default function QuizPlay() {
 
   const handleSubmitAnswer = () => {
     const timeSpent = Math.round((Date.now() - questionStartTime) / 1000)
-    const correctAnswers = currentQuestion.answer_options.filter((opt : QuizOption) => opt.is_right).map((opt : QuizOption) => opt.id)
+    const correctAnswers = currentQuestion.answer_options.filter((opt : QuizOption) => opt.is_right).map((opt : QuizOption) => opt.id.toString())
 
     let isCorrect = false
     if (currentQuestion.question_type === "multiple_choice") {
       isCorrect = selectedAnswers.length === 1 && correctAnswers.includes(selectedAnswers[0])
     } else if (currentQuestion.question_type === "checkbox") {
       isCorrect =
-        selectedAnswers.length === correctAnswers.length && selectedAnswers.every((id) => correctAnswers.includes( parseInt(id)))
+        selectedAnswers.length === correctAnswers.length && selectedAnswers.every((id) => correctAnswers.includes(id))
     }
 
     const result: QuizResult = {
