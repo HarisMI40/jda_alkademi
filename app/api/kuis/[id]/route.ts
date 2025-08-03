@@ -7,17 +7,17 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const { id } = await params;
 
   const data = await prisma.quiz.findFirst({
-  include: {
-    questions:{
-      include: {
+    include: {
+      questions: {
+        include: {
           answer_options: true, // Sertakan semua answer_options untuk setiap pertanyaan
         },
+      }
+    },
+    where: {
+      id: parseInt(id)
     }
-  },
-  where:{
-    id : parseInt(id)
-  }
-})
+  })
 
 
   return NextResponse.json(data);
@@ -30,10 +30,10 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     const body = await request.json();
     const { title, description, questions } = body;
 
-    let answer_options:QuizOption[] = [];
+    let answer_options: QuizOption[] = [];
 
     const dataQuestions = questions.map((question: QuizQuestion, index: any) => {
-      
+
       const answer_option: QuizOption[] = question.answer_options.map((option: QuizOption, optionIndex: number) => ({
         id: option.id,
         question_id: parseInt(question.id),
@@ -70,13 +70,13 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       }),
 
       prisma.questions.createMany({
-        data : dataQuestions
+        data: dataQuestions
       }),
 
       prisma.answer_options.createMany({
-        data : answer_options.map(ao => ({...ao, order: ao.order || 0}))
+        data: answer_options.map(ao => ({ ...ao, order: ao.order || 0 }))
       })
-  ]);
+    ]);
 
     return NextResponse.json({ success: true, message: "Quiz saved successfully" });
   } catch (error) {
@@ -95,14 +95,23 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   // mengambil parameter, contoh "https://www.web.com/api/123"
   try {
     const id = (await params).id;
-    const sql = neon(`${process.env.DATABASE_URL}`);
-    const hapus = await sql`DELETE FROM quiz where id = ${id}`;
+
+    const hapus = await prisma.quiz.delete({
+      where: {
+        id:  parseInt(id),
+      },
+    })
+
 
     if (!hapus) {
       throw new Error();
     }
 
-    const data = await sql`select * from quiz`;
+    const data = await prisma.quiz.findMany({
+      include: {
+        tag: true
+      }
+    });
 
     return NextResponse.json(data);
   } catch (error) {
@@ -116,17 +125,23 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     const id = (await params).id;
     const { title, tag } = await request.json();
 
-    const sql = neon(`${process.env.DATABASE_URL}`);
-
-    await sql`UPDATE quiz SET title = ${title}, tag_id = ${tag} where id = ${id}`;
+    await prisma.quiz.update({
+      where: {
+        id: parseInt(id),
+      },
+      data: {
+        title: title,
+        tag_id: tag
+      },
+    })
 
     const data = await prisma.quiz.findMany({
-    include : {
-      tag : true
-    }
-  });
+      include: {
+        tag: true
+      }
+    });
 
-  
+
     return NextResponse.json(data);
 
   } catch (error) {
