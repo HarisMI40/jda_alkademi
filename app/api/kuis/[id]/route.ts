@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { neon } from '@neondatabase/serverless';
 import prisma from "@/lib/db";
 import { QuizOption, QuizQuestion } from "@/type/formQuestion";
 
@@ -32,7 +31,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
     let answer_options: QuizOption[] = [];
 
-    const dataQuestions = questions.map((question: QuizQuestion, index: any) => {
+    const dataQuestions = questions.map((question: QuizQuestion, index: number) => {
 
       const answer_option: QuizOption[] = question.answer_options.map((option: QuizOption, optionIndex: number) => ({
         id: option.id,

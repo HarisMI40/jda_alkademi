@@ -44,7 +44,7 @@ export default function QuizBuilderPage() {
   // Untuk saat ini, kita akan terus passing props.
 const handleSaveQuiz = async () => {
     setLoading(true);
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/kuis/${id}`, quiz)
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/kuis/${id}`, quiz)
       .finally(() => setLoading(false));
 
       toast.success('Kuis berhasil tersimpan')

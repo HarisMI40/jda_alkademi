@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-
-import { neon } from '@neondatabase/serverless';
 import prisma from "@/lib/db";
 
 
