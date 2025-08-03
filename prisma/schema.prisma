@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
 }
 
@@ -9,7 +9,7 @@ datasource db {
 }
 
 model answer_options {
-  id           BigInt       @id(map: "pilihan_jawaban_pkey") @default(autoincrement())
+  id           BigInt    @id(map: "pilihan_jawaban_pkey") @default(autoincrement())
   question_id  BigInt
   options_text String    @db.VarChar(255)
   is_right     Boolean?  @default(false)
@@ -19,7 +19,7 @@ model answer_options {
 }
 
 model questions {
-  id             BigInt              @id(map: "pertanyaan_pkey") @default(autoincrement())
+  id             BigInt           @id(map: "pertanyaan_pkey") @default(autoincrement())
   quiz_id        Int
   question_text  String
   question_type  tipe_pertanyaan
@@ -33,11 +33,12 @@ model questions {
 model quiz {
   id          Int         @id(map: "kuis_pkey") @default(autoincrement())
   title       String      @db.VarChar(255)
-  tag         String?     @db.VarChar(100)
   created_at  DateTime?   @default(now()) @db.Timestamptz(6)
   updated_at  DateTime?   @default(now()) @db.Timestamptz(6)
   description String?
+  tag_id      BigInt?
   questions   questions[]
+  tag         tag?        @relation(fields: [tag_id], references: [id], onUpdate: NoAction, map: "fk_tag")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -50,6 +51,12 @@ model users {
   created_at DateTime @default(now()) @db.Timestamptz(6)
   updated_at DateTime @default(now()) @db.Timestamptz(6)
   role       String   @default("user") @db.VarChar
+}
+
+model tag {
+  id   BigInt @id @default(autoincrement())
+  name String @unique @db.VarChar(100)
+  quiz quiz[]
 }
 
 enum kuis_status {
