@@ -5,9 +5,24 @@ import { QuizOption, QuizQuestion } from "@/type/formQuestion";
 
 // Perbaikan pada GET
 export async function GET(request: NextRequest,
-  { params }: { params: Promise<{ id: string }>}
-  ) {
-  const { id } = await params; 
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const searchParams = request.nextUrl.searchParams;
+  const view = searchParams.get('view');
+
+  if (view === 'summary') {
+    const data = await prisma.quiz.findFirst({
+      include: {
+        tag : true
+      },
+      where: {
+        id: parseInt(id)
+      }
+    });
+
+    return NextResponse.json(data);
+  }
 
   const data = await prisma.quiz.findFirst({
     include: {
@@ -27,10 +42,10 @@ export async function GET(request: NextRequest,
 
 // Perbaikan pada POST
 export async function POST(request: NextRequest,
-  { params }: { params: Promise<{ id: string }>}
-  ) {
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = await params; 
+    const { id } = await params;
     const quizId = parseInt(id);
     const body = await request.json();
     const { title, description, questions } = body;
@@ -91,7 +106,7 @@ export async function POST(request: NextRequest,
 
 // Perbaikan pada DELETE
 export async function DELETE(request: NextRequest,
-  { params }: { params: Promise<{ id: string }>}
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params; // DIUBAH: Hapus await dan ubah cara akses
@@ -117,8 +132,8 @@ export async function DELETE(request: NextRequest,
 
 // Perbaikan pada PUT
 export async function PUT(request: NextRequest,
-  { params }: { params: Promise<{ id: string }>}
-  ) {
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const { id } = await params; // DIUBAH: Hapus await dan ubah cara akses
     const { title, tag_id } = await request.json(); // Menggunakan tag_id agar lebih jelas

@@ -33,8 +33,9 @@ export default function QuizPlay() {
   const [quizCompleted, setQuizCompleted] = useState(false)
   const [score, setScore] = useState(0);
   const {id} = useParams();
-
-  
+  const [countdown, setCountdown] = useState(3)
+  const [showCountdown, setShowCountdown] = useState(true)
+  const [gameStarted, setGameStarted] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,6 +64,84 @@ export default function QuizPlay() {
     setSelectedAnswers([])
     setShowAnswer(false)
   }, [currentQuestionIndex])
+
+
+    // Countdown effect
+  useEffect(() => {
+    if (showCountdown && countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000)
+      return () => clearTimeout(timer)
+    } else if (showCountdown && countdown === 0) {
+      setTimeout(() => {
+        setShowCountdown(false)
+        setGameStarted(true)
+      }, 1000)
+    }
+  }, [countdown, showCountdown])
+
+
+
+  
+
+  if (showCountdown) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-600 w-full flex items-center justify-center">
+        <div className="text-center">
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-white mb-4">Get ready to start!</h1>
+          </div>
+          
+          <div className="relative">
+            {countdown > 0 ? (
+              <div 
+                key={countdown}
+                className="text-9xl font-bold text-white animate-bounce"
+                style={{
+                  animation: 'countdownPulse 1s ease-in-out',
+                  textShadow: '0 0 30px rgba(255,255,255,0.5)'
+                }}
+              >
+                {countdown}
+              </div>
+            ) : (
+              <div 
+                className="text-6xl font-bold text-yellow-400 animate-pulse"
+                style={{
+                  animation: 'goAnimation 1s ease-in-out',
+                  textShadow: '0 0 30px rgba(255,255,0,0.8)'
+                }}
+              >
+                GO!
+              </div>
+            )}
+          </div>
+          
+          <div className="mt-8">
+            <div className="w-64 h-2 bg-white/20 rounded-full mx-auto overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-yellow-400 to-orange-500 transition-all duration-1000 ease-out"
+                style={{ width: `${((3 - countdown) / 3) * 100}%` }}
+              />
+            </div>
+          </div>
+        </div>
+        
+        <style jsx>{`
+          @keyframes countdownPulse {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+          }
+          
+          @keyframes goAnimation {
+            0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+            50% { transform: scale(1.3) rotate(5deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+          }
+        `}</style>
+      </div>
+    )
+  }
 
 
   if(!sampleQuiz) return null;
@@ -137,6 +216,10 @@ export default function QuizPlay() {
     if (percentage >= 80) return "text-green-600"
     if (percentage >= 60) return "text-yellow-600"
     return "text-red-600"
+  }
+
+  if (!gameStarted) {
+    return null
   }
 
   if (quizCompleted) {

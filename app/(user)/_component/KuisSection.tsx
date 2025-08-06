@@ -31,7 +31,7 @@ const KuisSection = async () => {
         <h2 className="text-2xl font-bold mb-6">Coba Kuis</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {kuisList.map((kuis:QuizResult) => (
-            <Link href={`/kuis/${kuis.id}/play`} key={kuis.id}>
+            <Link href={`/kuis/${kuis.id}`} key={kuis.id}>
               <Card className="hover:shadow-lg transition w-full h-full flex flex-col">
                 <CardHeader>
                   <CardTitle className="text-center text-xl">
